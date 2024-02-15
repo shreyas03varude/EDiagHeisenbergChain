@@ -1,0 +1,6 @@
+[submodule "eigen"]
+	path = eigen
+	url = https://github.com/libigl/eigen
+[submodule "spectra"]
+	path = spectra
+	url = https://github.com/yixuan/spectra
