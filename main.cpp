@@ -12,7 +12,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
-#include <omp.h>
+// #include <omp.h> // If OpenMP installed
 using namespace std;
 using namespace Eigen;
 using namespace Spectra;
@@ -278,7 +278,7 @@ void writeData(MatrixXd data, unsigned int L, float ratio) {
 }
 
 int main(int argc, char** argv) {
-    omp_set_num_threads(4);
+    // omp_set_num_threads(4);
 
     unsigned int L = 14;
     float Jxy = -1;
