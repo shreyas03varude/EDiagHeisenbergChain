@@ -14,9 +14,9 @@ On a Linux environment, the compilation looks something like:
 ```
 module load intel
 /./apps/compilers/intel/2020/0.166/mkl/bin/mklvars.sh intel64
-icpc -I. -g -O2 -o XXZ XXZ.cpp -qopenmp -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl -I"${MKLROOT}/include" -msse3 -axcore-avx2,core-avx-i
+icpc -I. -g -O2 -o xxz XXZ.cpp -qopenmp -L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl -I"${MKLROOT}/include" -msse3 -axcore-avx2,core-avx-i
 ```
-
+--------------------
 Example plot for 24 sites and J2/J1 = 0.5:
 
 <img src="https://raw.githubusercontent.com/shreyas03varude/EDiagHeisenbergChain/main/example.png">
