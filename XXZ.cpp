@@ -21,17 +21,17 @@ using namespace Eigen;
 
 typedef complex<double> dcomplex;
 typedef Triplet<float> T;
-typedef SparseMatrix<float, ColMajor, std::ptrdiff_t> Hamiltonian;
+typedef SparseMatrix<double, ColMajor, std::ptrdiff_t> Hamiltonian;
 typedef Eigen::Matrix<unsigned int, Dynamic, 1> VectorXui;
 
 uint64_t hSize(unsigned int L);
 int countBits(int x);
 VectorXui makeSz0Basis(unsigned int L);
 Hamiltonian makeSparseH(unsigned int L, float Jz, float Jxy, float Jz2, float Jxy2, float h);
-VectorXcd makeSzqket0(VectorXui& Sz0Basis, unsigned int L, double q, VectorXf& psi_0);
+VectorXcd makeSzqket0(VectorXui& Sz0Basis, unsigned int L, double q, VectorXd& psi_0);
 MatrixXd generateSqw(unsigned int L, float Jz, float Jxy, float Jz2, float Jxy2, float h, double w_0, double w_f, double dw, double gamma);
 void writeData(MatrixXd& data, string filename);
-VectorXd CmplxContFracExpan(VectorXcd& phi_n0, float E_0, Hamiltonian& sparseH, VectorXd& omegas, double gamma, double q);
+VectorXd CmplxContFracExpan(VectorXcd& phi_n0, double E_0, Hamiltonian& sparseH, VectorXd& omegas, double gamma, double q);
 
 // Given L, calculate L choose L/2, the dimension of the L-site Hilbert space. (L! / 2(L/2)!)
 uint64_t hSize(unsigned int L) {
@@ -133,7 +133,7 @@ Hamiltonian makeSparseH(VectorXui& Sz0Basis, unsigned int L, float Jz, float Jxy
 }
 
 // Calculate S_z^q|0> using a discrete Fourier transform.
-VectorXcd makeSzqket0(VectorXui& Sz0Basis, unsigned int L, double q, VectorXf& psi_0) {
+VectorXcd makeSzqket0(VectorXui& Sz0Basis, unsigned int L, double q, VectorXd& psi_0) {
 	VectorXcd Szqket0(psi_0.size());
 	dcomplex i(0, 1); // imaginary number i
 	for (int j = 0; j < Sz0Basis.size(); j++) {
@@ -162,10 +162,10 @@ MatrixXd generateSqw(unsigned int L, float Jz, float Jxy, float Jz2, float Jxy2,
 	cout << "Filled the Hamiltonian in " << duration.count() << " seconds" << endl;
 	start = chrono::high_resolution_clock::now();
 	cout << "Diagonalizing the Hamiltonian matrix" << endl;
-	VectorXf energies;
-	MatrixXf eigenstates;
-	Spectra::SparseSymMatProd<float, 1, 0, ptrdiff_t> obj(sparseH); // using upper triangular column-major matrix of type float and large storage index
-	Spectra::SymEigsSolver<Spectra::SparseSymMatProd<float, 1, 0, ptrdiff_t>> solver(obj, 2, 10); // 2 eigenvalues, dim of Krylov subspace = 10
+	VectorXd energies;
+	MatrixXd eigenstates;
+	Spectra::SparseSymMatProd<double, 1, 0, ptrdiff_t> obj(sparseH); // using upper triangular column-major matrix of type double and large storage index
+	Spectra::SymEigsSolver<Spectra::SparseSymMatProd<double, 1, 0, ptrdiff_t>> solver(obj, 2, 10); // 2 eigenvalues, dim of Krylov subspace = 10
 	solver.init();
 	solver.compute(Spectra::SortRule::SmallestAlge, 500, 1.0e-7, Spectra::SortRule::SmallestAlge); // selecting smallest algebraic EVs, 500 max iterations
 	stop = chrono::high_resolution_clock::now();
@@ -179,8 +179,8 @@ MatrixXd generateSqw(unsigned int L, float Jz, float Jxy, float Jz2, float Jxy2,
 		cout << "Failed!" << endl;
 		exit(-1);
 	}
-	float E_0 = energies[0]; // ground-state energy
-	VectorXf psi_0 = eigenstates.col(0); // ground-state eigenvector
+	double E_0 = energies[0]; // ground-state energy
+	VectorXd psi_0 = eigenstates.col(0); // ground-state eigenvector
 
 	cout << "Ground State Energy at total Sz = 0 sector: " << E_0 << endl;
 
@@ -211,7 +211,7 @@ MatrixXd generateSqw(unsigned int L, float Jz, float Jxy, float Jz2, float Jxy2,
 
 // Adapted from Elbio Dagotto, Correlated Electrons in High-temperature 
 // Superconductors, Rev. Mod. Phys. 66 (1994), p.774-777.
-VectorXd CmplxContFracExpan(VectorXcd& phi_n0, float E_0, Hamiltonian& sparseH, VectorXd& omegas, double gamma, double q) {
+VectorXd CmplxContFracExpan(VectorXcd& phi_n0, double E_0, Hamiltonian& sparseH, VectorXd& omegas, double gamma, double q) {
 	// casting double-type matrix in column major to complex-type matrix in row major
 	SparseMatrix<dcomplex, RowMajor, ptrdiff_t> complexSparseH = sparseH.cast<dcomplex>(); 
 
